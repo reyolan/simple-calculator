@@ -26,6 +26,7 @@ const clear = function clearDisplay() {
 	secondTerm = "";
 	operator = "";
 	hiddenDisplayInput = "";
+	secondOperator = "";
 };
 
 const acBtn = document.querySelector("#clear").addEventListener("click", clear);
@@ -66,7 +67,7 @@ const operate = function result(firstNum, secondNum, operator) {
 		displayResult.textContent = divide(firstNum, secondNum);
 	}
 	hiddenDisplayInput = displayResult.textContent;
-	displayInputs.textContent = "";
+
 	firstTerm = Number(displayResult.textContent);
 };
 
@@ -75,19 +76,37 @@ const operate = function result(firstNum, secondNum, operator) {
 let firstTerm = "";
 let secondTerm = "";
 let operator = "";
+let secondOperator = "";
 
 const storeFirst = function storeFirstAndSecondAndOperator() {
+	enableEqual();
 	//this condition is triggered when there are 2 operators detected inside the hiddenDisplayInput
-	if ((hiddenDisplayInput.match(/[+,*,÷,-]/g).length = 2)) {
+	if (hiddenDisplayInput.match(/[+,*,÷,-]/g).length === 2) {
+		if (!secondOperator) {
+			let operatorIndex = hiddenDisplayInput.indexOf(operator);
+			firstTerm = Number(hiddenDisplayInput.slice(0, operatorIndex));
+			secondTerm = Number(hiddenDisplayInput.slice(operatorIndex + 1, -1));
+			secondOperator = hiddenDisplayInput.slice(-1);
+			operate(firstTerm, secondTerm, operator);
+			hiddenDisplayInput = `${displayResult.textContent}${secondOperator}`;
+			displayInputs.textContent = `${hiddenDisplayInput}`;
+		} else {
+			operator = secondOperator;
+			let operatorIndex = hiddenDisplayInput.indexOf(operator);
+			secondTerm = Number(hiddenDisplayInput.slice(operatorIndex + 1, -1));
+			secondOperator = hiddenDisplayInput.slice(-1);
+			operate(firstTerm, secondTerm, operator);
+			hiddenDisplayInput = `${displayResult.textContent}${operator}`;
+			displayInputs.textContent = `${hiddenDisplayInput}`;
+		}
 	}
-	//this condition is triggered when = is pressed the first time
-	if (firstTerm === Number(displayResult.textContent)) {
-		operator = hiddenDisplayInput.slice(-1);
-		displayInputs.textContent = `${displayResult.textContent}${operator}`;
-	} else {
-		// this works only for first time
-		let operatorIndex = hiddenDisplayInput.indexOf(operator);
-		firstTerm = Number(hiddenDisplayInput.slice(0, operatorIndex - 1));
+	// if (hiddenDisplayInput.match(/[+,*,÷,-]/g).length === 1)
+	else {
+		//this condition is triggered when = is pressed and then add the operator to the result
+		// operator = hiddenDisplayInput.slice(-1);
+		// displayInputs.textContent = `${displayResult.textContent}${operator}`;
+		// this works only for first time an operator is pressed
+		firstTerm = Number(hiddenDisplayInput.slice(0, -1));
 		operator = hiddenDisplayInput.slice(-1);
 	}
 };
@@ -102,19 +121,22 @@ const storeSecond = function storeSecondTermAndSolve() {
 	let operatorIndex = hiddenDisplayInput.indexOf(operator);
 	secondTerm = Number(hiddenDisplayInput.slice(operatorIndex + 1));
 	operate(firstTerm, secondTerm, operator);
+	disableEqual();
 };
 
-const equal = document
-	.querySelector("#equal")
-	.addEventListener("click", storeSecond);
+const equal = document.querySelector("#equal");
+equal.addEventListener("click", storeSecond);
 
-//if + / - * is pressed, display it in displayResult
-//input another number and press another + / - *, display it in displayResult,
-//store the answer in the firstTerm variable
+const disableEqual = function disableEqualBtn() {
+	equal.disabled = true;
+};
 
-//if str.length of str.match is 2, do the displayResult and the operation
-// let result = text.match (/[+,*,÷,-]/g);
+const enableEqual = function enableEqualBtn() {
+	equal.disabled = false;
+};
 
-//if there are 2 in the array text.match, operate and clear the hiddenDisplayInput,
-//replace textResult with the answer obtained
-// so if display is 88+3+ --> it becomes 91 + after the + is pressed
+//8 + 3
+//result is 11
+//11 - 6
+// result is 5
+//next I pressed - but what was shown is the operator (operator) variable which is + (secondOperator)
