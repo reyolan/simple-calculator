@@ -27,6 +27,8 @@ const clear = function clearDisplay() {
 	operator = "";
 	hiddenDisplayInput = "";
 	secondOperator = "";
+	enableEqual();
+	enableDecimal();
 };
 
 const acBtn = document.querySelector("#clear").addEventListener("click", clear);
@@ -39,8 +41,24 @@ const back = function backSpace() {
 
 const backBtn = document.querySelector("#back").addEventListener("click", back);
 
+//enable or disable decimal button
+const disableDecimal = function disableDecimalPoint() {
+	decimal.disabled = true;
+};
+
+const enableDecimal = function enableDecimalPoint() {
+	decimal.disabled = false;
+};
+
+const decimal = document.querySelector("#decimal");
+decimal.addEventListener("click", disableDecimal);
+
 // operations
-const add = function (firstTerm, secondTerm) {
+const round = function roundOff(num) {
+	return +(Math.round(num + "e+6") + "e-6");
+};
+
+const add = function sum(firstTerm, secondTerm) {
 	return firstTerm + secondTerm;
 };
 
@@ -58,13 +76,13 @@ const divide = function quotient(firstTerm, secondTerm) {
 
 const operate = function result(firstNum, secondNum, operator) {
 	if (operator === "+") {
-		displayResult.textContent = add(firstNum, secondNum);
+		displayResult.textContent = round(add(firstNum, secondNum));
 	} else if (operator === "-") {
-		displayResult.textContent = subtract(firstNum, secondNum);
+		displayResult.textContent = round(subtract(firstNum, secondNum));
 	} else if (operator === "*") {
-		displayResult.textContent = multiply(firstNum, secondNum);
+		displayResult.textContent = round(multiply(firstNum, secondNum));
 	} else if (operator === "÷") {
-		displayResult.textContent = divide(firstNum, secondNum);
+		displayResult.textContent = round(divide(firstNum, secondNum));
 	}
 	hiddenDisplayInput = displayResult.textContent;
 
@@ -77,38 +95,36 @@ let firstTerm = "";
 let secondTerm = "";
 let operator = "";
 let secondOperator = "";
+let operatorIndex = "";
 
-const storeFirst = function storeFirstAndSecondAndOperator() {
+const storeFirst = function storeFirstAndSecondAndOperator(e) {
 	enableEqual();
+	enableDecimal();
 	//this condition is triggered when there are 2 operators detected inside the hiddenDisplayInput
 	if (hiddenDisplayInput.match(/[+,*,÷,-]/g).length === 2) {
 		if (!secondOperator) {
-			let operatorIndex = hiddenDisplayInput.indexOf(operator);
-			firstTerm = Number(hiddenDisplayInput.slice(0, operatorIndex));
+			//first instance
+			operatorIndex = hiddenDisplayInput.indexOf(operator);
+			secondOperator = e.target.textContent;
 			secondTerm = Number(hiddenDisplayInput.slice(operatorIndex + 1, -1));
-			secondOperator = hiddenDisplayInput.slice(-1);
 			operate(firstTerm, secondTerm, operator);
 			hiddenDisplayInput = `${displayResult.textContent}${secondOperator}`;
-			displayInputs.textContent = `${hiddenDisplayInput}`;
 		} else {
 			operator = secondOperator;
-			let operatorIndex = hiddenDisplayInput.indexOf(operator);
+			secondOperator = e.target.textContent;
+			operatorIndex = hiddenDisplayInput.indexOf(operator);
 			secondTerm = Number(hiddenDisplayInput.slice(operatorIndex + 1, -1));
-			secondOperator = hiddenDisplayInput.slice(-1);
 			operate(firstTerm, secondTerm, operator);
-			hiddenDisplayInput = `${displayResult.textContent}${operator}`;
-			displayInputs.textContent = `${hiddenDisplayInput}`;
+			hiddenDisplayInput = `${displayResult.textContent}${secondOperator}`;
 		}
+	} else {
+		operator = e.target.textContent;
+		operatorIndex = hiddenDisplayInput.indexOf(operator);
+		firstTerm = Number(hiddenDisplayInput.slice(0, operatorIndex));
+		secondTerm = Number(hiddenDisplayInput.slice(operatorIndex + 1, -1));
+		hiddenDisplayInput = `${displayInputs.textContent}`;
 	}
-	// if (hiddenDisplayInput.match(/[+,*,÷,-]/g).length === 1)
-	else {
-		//this condition is triggered when = is pressed and then add the operator to the result
-		// operator = hiddenDisplayInput.slice(-1);
-		// displayInputs.textContent = `${displayResult.textContent}${operator}`;
-		// this works only for first time an operator is pressed
-		firstTerm = Number(hiddenDisplayInput.slice(0, -1));
-		operator = hiddenDisplayInput.slice(-1);
-	}
+	displayInputs.textContent = `${hiddenDisplayInput}`;
 };
 
 const operationClass = document.querySelectorAll(".operation");
@@ -118,12 +134,16 @@ operationClass.forEach((button) =>
 
 //if I pressed =, store second term and do operation
 const storeSecond = function storeSecondTermAndSolve() {
-	let operatorIndex = hiddenDisplayInput.indexOf(operator);
+	if (secondOperator) {
+		operator = secondOperator;
+	}
+	operatorIndex = hiddenDisplayInput.indexOf(operator);
 	secondTerm = Number(hiddenDisplayInput.slice(operatorIndex + 1));
 	operate(firstTerm, secondTerm, operator);
 	disableEqual();
 };
 
+//enable or disable equal button
 const equal = document.querySelector("#equal");
 equal.addEventListener("click", storeSecond);
 
@@ -134,9 +154,3 @@ const disableEqual = function disableEqualBtn() {
 const enableEqual = function enableEqualBtn() {
 	equal.disabled = false;
 };
-
-//8 + 3
-//result is 11
-//11 - 6
-// result is 5
-//next I pressed - but what was shown is the operator (operator) variable which is + (secondOperator)
