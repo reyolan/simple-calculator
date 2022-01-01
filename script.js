@@ -107,14 +107,14 @@ const storeFirst = function storeFirstAndSecondAndOperator(e) {
 		operatorIndex = hiddenDisplayInput.indexOf(operator);
 		secondTerm = Number(hiddenDisplayInput.slice(operatorIndex + 1, -1));
 		operate(firstTerm, secondTerm, operator);
-		hiddenDisplayInput = `${displayResult.textContent}${secondOperator}`;
+		hiddenDisplayInput = `${displayResult.textContent.slice(
+			2
+		)}${secondOperator}`;
 	} else {
 		//condition triggers when solving via pressing =
 		operator = e.target.textContent;
 		operatorIndex = hiddenDisplayInput.indexOf(operator);
 		firstTerm = Number(hiddenDisplayInput.slice(0, operatorIndex));
-		secondTerm = Number(hiddenDisplayInput.slice(operatorIndex + 1, -1));
-		hiddenDisplayInput = `${displayInputs.textContent}`;
 	}
 	displayInputs.textContent = `${hiddenDisplayInput}`;
 };
@@ -127,6 +127,9 @@ operationClass.forEach((button) =>
 //fires when = is pressed
 const storeSecond = function storeSecondTermAndSolve(e) {
 	addRemoveBtnEffect(e);
+	if (hiddenDisplayInput.charAt(hiddenDisplayInput.length - 1) === operator) {
+		return;
+	}
 	if (secondOperator) {
 		operator = secondOperator;
 	}
@@ -197,8 +200,9 @@ const showResult = function checkIfNanOrNumber(result) {
 		displayResult.textContent = "Can't divide by 0";
 		disableBtns();
 	} else {
-		hiddenDisplayInput = displayResult.textContent;
-		firstTerm = Number(displayResult.textContent);
+		displayResult.textContent = `= ${displayResult.textContent}`;
+		hiddenDisplayInput = displayResult.textContent.slice(2);
+		firstTerm = Number(displayResult.textContent.slice(2));
 	}
 };
 
