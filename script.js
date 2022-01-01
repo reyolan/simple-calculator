@@ -10,21 +10,29 @@ let hiddenDisplayInput = "";
 //result
 const displayResult = document.querySelector("#result");
 
+//add and remove button effect
+const addRemoveBtnEffect = function addAndRemoveButtonEffect(e) {
+	e.target.classList.toggle("pressed");
+	setTimeout(() => e.target.classList.toggle("pressed"), 100);
+};
+
 //buttons
 const insert = function populateDisplay(e) {
+	addRemoveBtnEffect(e);
 	let press = `${e.target.textContent}`;
 	if (hiddenDisplayInput === displayResult.textContent) {
 		displayInputs.textContent = `${displayResult.textContent}`;
 	}
 	hiddenDisplayInput = `${hiddenDisplayInput}${press}`;
-	displayInputs.textContent = `${displayInputs.textContent}${press}`;
+	displayInputs.textContent = hiddenDisplayInput;
 };
 
 const inputBtn = document.querySelectorAll(".input-btn");
 inputBtn.forEach((button) => button.addEventListener("click", insert));
 
 //backspace button
-const back = function backSpace() {
+const back = function backSpace(e) {
+	addRemoveBtnEffect(e);
 	hiddenDisplayInput = hiddenDisplayInput.slice(0, -1);
 	displayInputs.textContent = hiddenDisplayInput;
 	if (!hiddenDisplayInput.includes(".")) {
@@ -32,7 +40,8 @@ const back = function backSpace() {
 	}
 };
 
-const backBtn = document.querySelector("#back").addEventListener("click", back);
+const backBtn = document.querySelector("#back");
+backBtn.addEventListener("click", back);
 
 //enable or disable decimal button
 const disableDecimal = function disableDecimalPoint() {
@@ -77,8 +86,7 @@ const operate = function result(firstNum, secondNum, operator) {
 	} else if (operator === "÷") {
 		displayResult.textContent = round(divide(firstNum, secondNum));
 	}
-	hiddenDisplayInput = displayResult.textContent;
-	firstTerm = Number(displayResult.textContent);
+	showResult(displayResult.textContent);
 };
 
 const storeFirst = function storeFirstAndSecondAndOperator(e) {
@@ -112,7 +120,8 @@ operationClass.forEach((button) =>
 );
 
 //if I pressed =, store second term and do operation
-const storeSecond = function storeSecondTermAndSolve() {
+const storeSecond = function storeSecondTermAndSolve(e) {
+	addRemoveBtnEffect(e);
 	if (secondOperator) {
 		operator = secondOperator;
 	}
@@ -123,30 +132,45 @@ const storeSecond = function storeSecondTermAndSolve() {
 };
 
 //equal button
-const equal = document.querySelector("#equal");
-equal.addEventListener("click", storeSecond);
+const equalBtn = document.querySelector("#equal");
+equalBtn.addEventListener("click", storeSecond);
 
 //enable or disable equal button
 const disableEqual = function disableEqualBtn() {
-	equal.disabled = true;
+	equalBtn.disabled = true;
 };
 
 const enableEqual = function enableEqualBtn() {
-	equal.disabled = false;
+	equalBtn.disabled = false;
 };
 
 //% button
-const percentResult = function moveDecimalPlacetoLeftByTwo() {
+const percentResult = function moveDecimalPlacetoLeftByTwo(e) {
+	addRemoveBtnEffect(e);
 	displayResult.textContent = Number(displayResult.textContent) / 100;
 	hiddenDisplayInput = displayResult.textContent;
 	firstTerm = Number(displayResult.textContent);
 };
 
-const percent = document.querySelector("#percent");
-percent.addEventListener("click", percentResult);
+const percentBtn = document.querySelector("#percent");
+percentBtn.addEventListener("click", percentResult);
+
+//disable all buttons except AC
+const disableBtns = function disableAllBtnExceptClear() {
+	inputBtn.forEach((button) => (button.disabled = true));
+	backBtn.disabled = true;
+	percentBtn.disabled = true;
+};
+
+const enableBtns = function enableAllBtnExceptClear() {
+	inputBtn.forEach((button) => (button.disabled = false));
+	backBtn.disabled = false;
+	percentBtn.disabled = false;
+};
 
 //initialize Variables
-const initialize = function initializeVariables() {
+const initialize = function initializeVariables(e) {
+	addRemoveBtnEffect(e);
 	displayInputs.textContent = "";
 	displayResult.textContent = "";
 	firstTerm = "";
@@ -154,11 +178,44 @@ const initialize = function initializeVariables() {
 	operator = "";
 	hiddenDisplayInput = "";
 	secondOperator = "";
+	enableBtns();
 	disableEqual();
-	enableDecimal();
 };
 
-initialize();
-
 //clear button
-document.querySelector("#clear").addEventListener("click", initialize);
+const clearBtn = document.querySelector("#clear");
+clearBtn.addEventListener("click", initialize);
+
+//NaN result
+const showResult = function checkIfNanOrNumber(result) {
+	if (displayResult.textContent === "NaN") {
+		displayResult.textContent = "Can't divide by 0";
+		disableBtns();
+	} else {
+		hiddenDisplayInput = displayResult.textContent;
+		firstTerm = Number(displayResult.textContent);
+	}
+};
+
+//key event
+const eventKey = function pressKey(e) {
+	console.log(e.key);
+	for (let i = 0; i < 15; i++) {
+		if (inputBtn[i].textContent === e.key) {
+			inputBtn[i].click();
+		}
+	}
+	if (e.key === "=" || e.key === "Enter") {
+		equalBtn.click();
+	} else if (e.key === "Backspace") {
+		backBtn.click();
+	} else if (e.key === "Escape") {
+		clearBtn.click();
+	} else if (e.key === "%") {
+		percentBtn.click();
+	} else if (e.key === "/") {
+		inputBtn[0].click();
+	}
+};
+
+document.addEventListener("keydown", eventKey);

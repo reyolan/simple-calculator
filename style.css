@@ -12,16 +12,15 @@ body {
 	min-height: 100vh;
 	align-items: center;
 	background-color: black;
-}
-
-h1 {
-	color: white;
+	color: #afafaf;
+	padding-top: 8px;
+	padding-bottom: 4px;
 }
 
 #container {
 	height: 500px;
 	width: 350px;
-	border: double 6px white;
+	border: double 6px #afafaf;
 	display: flex;
 	flex-direction: column;
 	background-color: black;
@@ -37,6 +36,7 @@ h1 {
 	color: white;
 	padding: 10px;
 	background-color: black;
+	border-bottom: 1px solid #2b2b2b;
 }
 
 #inputs {
@@ -54,7 +54,7 @@ h1 {
 }
 
 button {
-	color: white;
+	color: #afafaf;
 	width: 25%;
 	background-color: black;
 	font-size: 24px;
@@ -62,22 +62,23 @@ button {
 	border-radius: 50%;
 }
 button:hover {
-	background-color: darkgray;
+	background-color: #808b8888;
 }
 
-button:active {
+.pressed {
+	background-color: #808b8888;
 	transform: translateY(2px);
-	box-shadow: 0 2px lightgray;
+	box-shadow: 0 2px #808b8888;
 }
 
 #zero {
 	flex: 1;
 }
 
-footer {
-	color: white;
-}
-
 a:visited {
 	color: inherit;
+}
+
+.operation {
+	color: #2596be;
 }
