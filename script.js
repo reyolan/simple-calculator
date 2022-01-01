@@ -1,3 +1,8 @@
+let firstTerm;
+let secondTerm;
+let operator;
+let secondOperator;
+let operatorIndex = "";
 //display
 const displayInputs = document.querySelector("#inputs");
 let hiddenDisplayInput = "";
@@ -18,25 +23,13 @@ const insert = function populateDisplay(e) {
 const inputBtn = document.querySelectorAll(".input-btn");
 inputBtn.forEach((button) => button.addEventListener("click", insert));
 
-//clear button
-const clear = function clearDisplay() {
-	displayInputs.textContent = "";
-	displayResult.textContent = "";
-	firstTerm = "";
-	secondTerm = "";
-	operator = "";
-	hiddenDisplayInput = "";
-	secondOperator = "";
-	enableEqual();
-	enableDecimal();
-};
-
-const acBtn = document.querySelector("#clear").addEventListener("click", clear);
-
 //backspace button
 const back = function backSpace() {
 	hiddenDisplayInput = hiddenDisplayInput.slice(0, -1);
-	displayInputs.textContent = displayInputs.textContent.slice(0, -1);
+	displayInputs.textContent = hiddenDisplayInput;
+	if (!hiddenDisplayInput.includes(".")) {
+		enableDecimal();
+	}
 };
 
 const backBtn = document.querySelector("#back").addEventListener("click", back);
@@ -85,39 +78,25 @@ const operate = function result(firstNum, secondNum, operator) {
 		displayResult.textContent = round(divide(firstNum, secondNum));
 	}
 	hiddenDisplayInput = displayResult.textContent;
-
 	firstTerm = Number(displayResult.textContent);
 };
-
-//if I pressed + x / -, store the first term
-//if I pressed + x / -, store it in the operator variable
-let firstTerm = "";
-let secondTerm = "";
-let operator = "";
-let secondOperator = "";
-let operatorIndex = "";
 
 const storeFirst = function storeFirstAndSecondAndOperator(e) {
 	enableEqual();
 	enableDecimal();
 	//this condition is triggered when there are 2 operators detected inside the hiddenDisplayInput
 	if (hiddenDisplayInput.match(/[+,*,÷,-]/g).length === 2) {
-		if (!secondOperator) {
-			//first instance
-			operatorIndex = hiddenDisplayInput.indexOf(operator);
-			secondOperator = e.target.textContent;
-			secondTerm = Number(hiddenDisplayInput.slice(operatorIndex + 1, -1));
-			operate(firstTerm, secondTerm, operator);
-			hiddenDisplayInput = `${displayResult.textContent}${secondOperator}`;
-		} else {
+		if (secondOperator) {
 			operator = secondOperator;
-			secondOperator = e.target.textContent;
-			operatorIndex = hiddenDisplayInput.indexOf(operator);
-			secondTerm = Number(hiddenDisplayInput.slice(operatorIndex + 1, -1));
-			operate(firstTerm, secondTerm, operator);
-			hiddenDisplayInput = `${displayResult.textContent}${secondOperator}`;
 		}
+		secondOperator = e.target.textContent; //saves the 2nd operator
+		operatorIndex = hiddenDisplayInput.indexOf(operator);
+		secondTerm = Number(hiddenDisplayInput.slice(operatorIndex + 1, -1));
+		operate(firstTerm, secondTerm, operator);
+		hiddenDisplayInput = `${displayResult.textContent}${secondOperator}`;
 	} else {
+		//condition triggers when solving via pressing =
+		//if I pressed + x / -, store the first term and store the pressed operator in a variable
 		operator = e.target.textContent;
 		operatorIndex = hiddenDisplayInput.indexOf(operator);
 		firstTerm = Number(hiddenDisplayInput.slice(0, operatorIndex));
@@ -143,10 +122,11 @@ const storeSecond = function storeSecondTermAndSolve() {
 	disableEqual();
 };
 
-//enable or disable equal button
+//equal button
 const equal = document.querySelector("#equal");
 equal.addEventListener("click", storeSecond);
 
+//enable or disable equal button
 const disableEqual = function disableEqualBtn() {
 	equal.disabled = true;
 };
@@ -154,3 +134,31 @@ const disableEqual = function disableEqualBtn() {
 const enableEqual = function enableEqualBtn() {
 	equal.disabled = false;
 };
+
+//% button
+const percentResult = function moveDecimalPlacetoLeftByTwo() {
+	displayResult.textContent = Number(displayResult.textContent) / 100;
+	hiddenDisplayInput = displayResult.textContent;
+	firstTerm = Number(displayResult.textContent);
+};
+
+const percent = document.querySelector("#percent");
+percent.addEventListener("click", percentResult);
+
+//initialize Variables
+const initialize = function initializeVariables() {
+	displayInputs.textContent = "";
+	displayResult.textContent = "";
+	firstTerm = "";
+	secondTerm = "";
+	operator = "";
+	hiddenDisplayInput = "";
+	secondOperator = "";
+	disableEqual();
+	enableDecimal();
+};
+
+initialize();
+
+//clear button
+document.querySelector("#clear").addEventListener("click", initialize);

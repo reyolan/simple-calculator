@@ -2,6 +2,7 @@
 	margin: 0;
 	padding: 0;
 	box-sizing: border-box;
+	text-decoration: none;
 }
 
 body {
@@ -10,16 +11,20 @@ body {
 	justify-content: space-between;
 	min-height: 100vh;
 	align-items: center;
+	background-color: black;
+}
+
+h1 {
+	color: white;
 }
 
 #container {
 	height: 500px;
 	width: 350px;
-	border: solid 1px;
+	border: double 6px white;
 	display: flex;
 	flex-direction: column;
 	background-color: black;
-	border-radius: 3%;
 }
 
 #display {
@@ -28,14 +33,14 @@ body {
 	justify-content: space-between;
 	align-items: flex-end;
 	height: 120px;
-	border: 2px solid yellow;
+	overflow: hidden;
 	color: white;
-	padding: 4px 8px;
+	padding: 10px;
+	background-color: black;
 }
 
 #inputs {
 	font-size: 50px;
-	color: white;
 }
 
 #result {
@@ -46,12 +51,33 @@ body {
 .button-rows div {
 	display: flex;
 	flex-grow: 1;
-	border: 2px solid green;
 }
 
 button {
 	color: white;
 	width: 25%;
-	background-color: darkblue;
+	background-color: black;
 	font-size: 24px;
+	border: 0px;
+	border-radius: 50%;
+}
+button:hover {
+	background-color: darkgray;
+}
+
+button:active {
+	transform: translateY(2px);
+	box-shadow: 0 2px lightgray;
+}
+
+#zero {
+	flex: 1;
+}
+
+footer {
+	color: white;
+}
+
+a:visited {
+	color: inherit;
 }
