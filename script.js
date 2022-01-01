@@ -34,7 +34,9 @@ const insert = function populateDisplay(e) {
 };
 
 const inputBtn = document.querySelectorAll(".input-btn");
-inputBtn.forEach((button) => button.addEventListener("click", insert));
+for (const button of inputBtn) {
+	button.addEventListener("click", insert);
+}
 
 //backspace button
 const back = function backSpace(e) {
@@ -120,9 +122,9 @@ const storeFirst = function storeFirstAndSecondAndOperator(e) {
 };
 
 const operationClass = document.querySelectorAll(".operation");
-operationClass.forEach((button) =>
-	button.addEventListener("click", storeFirst)
-);
+for (const button of operationClass) {
+	button.addEventListener("click", storeFirst);
+}
 
 //fires when = is pressed
 const storeSecond = function storeSecondTermAndSolve(e) {
