@@ -12,8 +12,13 @@ const displayResult = document.querySelector("#result");
 
 //add and remove button effect
 const addRemoveBtnEffect = function addAndRemoveButtonEffect(e) {
-	e.target.classList.toggle("pressed");
-	setTimeout(() => e.target.classList.toggle("pressed"), 100);
+	if (e.target.textContent === "=") {
+		e.target.classList.toggle("equalpressed");
+		setTimeout(() => e.target.classList.toggle("equalpressed"), 100);
+	} else {
+		e.target.classList.toggle("pressed");
+		setTimeout(() => e.target.classList.toggle("pressed"), 100);
+	}
 };
 
 //buttons
@@ -199,7 +204,6 @@ const showResult = function checkIfNanOrNumber(result) {
 
 //key event
 const eventKey = function pressKey(e) {
-	console.log(e.key);
 	for (let i = 0; i < 15; i++) {
 		if (inputBtn[i].textContent === e.key) {
 			inputBtn[i].click();
