@@ -2,7 +2,8 @@ let firstTerm;
 let secondTerm;
 let operator;
 let secondOperator;
-let operatorIndex = "";
+let operatorIndex;
+
 //display
 const displayInputs = document.querySelector("#inputs");
 let hiddenDisplayInput = "";
@@ -97,7 +98,7 @@ const operate = function result(firstNum, secondNum, operator) {
 const storeFirst = function storeFirstAndSecondAndOperator(e) {
 	enableEqual();
 	enableDecimal();
-	//this condition is triggered when there are 2 operators detected inside the hiddenDisplayInput
+	//condition triggers when 2 operators are detected inside the hiddenDisplayInput
 	if (hiddenDisplayInput.match(/[+,*,÷,-]/g).length === 2) {
 		if (secondOperator) {
 			operator = secondOperator;
@@ -109,7 +110,6 @@ const storeFirst = function storeFirstAndSecondAndOperator(e) {
 		hiddenDisplayInput = `${displayResult.textContent}${secondOperator}`;
 	} else {
 		//condition triggers when solving via pressing =
-		//if I pressed + x / -, store the first term and store the pressed operator in a variable
 		operator = e.target.textContent;
 		operatorIndex = hiddenDisplayInput.indexOf(operator);
 		firstTerm = Number(hiddenDisplayInput.slice(0, operatorIndex));
@@ -124,7 +124,7 @@ operationClass.forEach((button) =>
 	button.addEventListener("click", storeFirst)
 );
 
-//if I pressed =, store second term and do operation
+//fires when = is pressed
 const storeSecond = function storeSecondTermAndSolve(e) {
 	addRemoveBtnEffect(e);
 	if (secondOperator) {
