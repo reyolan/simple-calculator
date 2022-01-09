@@ -94,7 +94,7 @@ const operate = function result(firstNum, secondNum, operator) {
 	} else if (operator === "÷") {
 		displayResult.textContent = round(divide(firstNum, secondNum));
 	}
-	showResult(displayResult.textContent);
+	showResult();
 };
 
 const storeFirst = function storeFirstAndSecondAndOperator(e) {
@@ -197,9 +197,9 @@ const clearBtn = document.querySelector("#clear");
 clearBtn.addEventListener("click", initialize);
 
 //NaN result
-const showResult = function checkIfNanOrNumber(result) {
+const showResult = function checkIfNanOrNumber() {
 	if (displayResult.textContent === "NaN") {
-		displayResult.textContent = "Can't divide by 0";
+		displayResult.textContent = "undefined";
 		disableBtns();
 	} else {
 		displayResult.textContent = `= ${displayResult.textContent}`;
