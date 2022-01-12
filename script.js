@@ -4,15 +4,37 @@ let operator;
 let secondOperator;
 let operatorIndex;
 
-//display
 const displayInputs = document.querySelector("#inputs");
 let hiddenDisplayInput = "";
 
-//result
 const displayResult = document.querySelector("#result");
 
-//add and remove button effect
-const addRemoveBtnEffect = function addAndRemoveButtonEffect(e) {
+const equalBtn = document.querySelector("#equal");
+equalBtn.addEventListener("click", storeSecondTermAndSolve);
+
+const inputBtn = document.querySelectorAll(".input-btn");
+for (const button of inputBtn) {
+	button.addEventListener("click", populateDisplay);
+}
+
+const backBtn = document.querySelector("#back");
+backBtn.addEventListener("click", backSpace);
+
+const decimalBtn = document.querySelector("#decimal");
+decimalBtn.addEventListener("click", disableDecimalPoint);
+
+const operationClass = document.querySelectorAll(".operation");
+for (const button of operationClass) {
+	button.addEventListener("click", storeFirstAndSecondAndOperator);
+}
+
+const clearBtn = document.querySelector("#clear");
+clearBtn.addEventListener("click", initializeVariables);
+
+const percentBtn = document.querySelector("#percent");
+percentBtn.addEventListener("click", moveDecimalPlacetoLeftByTwo);
+
+function toggleButtonEffect(e) {
 	if (e.target.textContent === "=") {
 		e.target.classList.toggle("equalpressed");
 		setTimeout(() => e.target.classList.toggle("equalpressed"), 100);
@@ -20,86 +42,71 @@ const addRemoveBtnEffect = function addAndRemoveButtonEffect(e) {
 		e.target.classList.toggle("pressed");
 		setTimeout(() => e.target.classList.toggle("pressed"), 100);
 	}
-};
+}
 
-//buttons
-const insert = function populateDisplay(e) {
-	addRemoveBtnEffect(e);
+function populateDisplay(e) {
+	toggleButtonEffect(e);
 	let press = `${e.target.textContent}`;
 	if (hiddenDisplayInput === displayResult.textContent) {
 		displayInputs.textContent = `${displayResult.textContent}`;
 	}
 	hiddenDisplayInput = `${hiddenDisplayInput}${press}`;
 	displayInputs.textContent = hiddenDisplayInput;
-};
-
-const inputBtn = document.querySelectorAll(".input-btn");
-for (const button of inputBtn) {
-	button.addEventListener("click", insert);
 }
 
-//backspace button
-const back = function backSpace(e) {
-	addRemoveBtnEffect(e);
+function backSpace(e) {
+	toggleButtonEffect(e);
 	hiddenDisplayInput = hiddenDisplayInput.slice(0, -1);
 	displayInputs.textContent = hiddenDisplayInput;
 	if (!hiddenDisplayInput.includes(".")) {
-		enableDecimal();
+		enableDecimalPoint();
 	}
-};
+}
 
-const backBtn = document.querySelector("#back");
-backBtn.addEventListener("click", back);
+function disableDecimalPoint() {
+	decimalBtn.disabled = true;
+}
 
-//enable or disable decimal button
-const disableDecimal = function disableDecimalPoint() {
-	decimal.disabled = true;
-};
+function enableDecimalPoint() {
+	decimalBtn.disabled = false;
+}
 
-const enableDecimal = function enableDecimalPoint() {
-	decimal.disabled = false;
-};
-
-const decimal = document.querySelector("#decimal");
-decimal.addEventListener("click", disableDecimal);
-
-// operations
-const round = function roundOff(num) {
+function roundOff(num) {
 	return +(Math.round(num + "e+6") + "e-6");
-};
+}
 
-const add = function sum(firstTerm, secondTerm) {
+function add(firstTerm, secondTerm) {
 	return firstTerm + secondTerm;
-};
+}
 
-const subtract = function difference(firstTerm, secondTerm) {
+function subtract(firstTerm, secondTerm) {
 	return firstTerm - secondTerm;
-};
+}
 
-const multiply = function product(firstTerm, secondTerm) {
+function multiply(firstTerm, secondTerm) {
 	return firstTerm * secondTerm;
-};
+}
 
-const divide = function quotient(firstTerm, secondTerm) {
+function divide(firstTerm, secondTerm) {
 	return firstTerm / secondTerm;
-};
+}
 
-const operate = function result(firstNum, secondNum, operator) {
+function operate(firstNum, secondNum, operator) {
 	if (operator === "+") {
-		displayResult.textContent = round(add(firstNum, secondNum));
+		displayResult.textContent = roundOff(add(firstNum, secondNum));
 	} else if (operator === "-") {
-		displayResult.textContent = round(subtract(firstNum, secondNum));
+		displayResult.textContent = roundOff(subtract(firstNum, secondNum));
 	} else if (operator === "*") {
-		displayResult.textContent = round(multiply(firstNum, secondNum));
+		displayResult.textContent = roundOff(multiply(firstNum, secondNum));
 	} else if (operator === "÷") {
-		displayResult.textContent = round(divide(firstNum, secondNum));
+		displayResult.textContent = roundOff(divide(firstNum, secondNum));
 	}
-	showResult();
-};
+	checkIfNanOrNumber();
+}
 
-const storeFirst = function storeFirstAndSecondAndOperator(e) {
-	enableEqual();
-	enableDecimal();
+function storeFirstAndSecondAndOperator(e) {
+	enableEqualBtn();
+	enableDecimalPoint();
 	//condition triggers when 2 operators are detected inside the hiddenDisplayInput
 	if (hiddenDisplayInput.match(/[+,*,÷,-]/g).length === 2) {
 		if (secondOperator) {
@@ -107,6 +114,7 @@ const storeFirst = function storeFirstAndSecondAndOperator(e) {
 		}
 		secondOperator = e.target.textContent; //saves the 2nd operator
 		operatorIndex = hiddenDisplayInput.indexOf(operator);
+
 		secondTerm = Number(hiddenDisplayInput.slice(operatorIndex + 1, -1));
 		operate(firstTerm, secondTerm, operator);
 		hiddenDisplayInput = `${displayResult.textContent.slice(
@@ -119,16 +127,11 @@ const storeFirst = function storeFirstAndSecondAndOperator(e) {
 		firstTerm = Number(hiddenDisplayInput.slice(0, operatorIndex));
 	}
 	displayInputs.textContent = `${hiddenDisplayInput}`;
-};
-
-const operationClass = document.querySelectorAll(".operation");
-for (const button of operationClass) {
-	button.addEventListener("click", storeFirst);
 }
 
 //fires when = is pressed
-const storeSecond = function storeSecondTermAndSolve(e) {
-	addRemoveBtnEffect(e);
+function storeSecondTermAndSolve(e) {
+	toggleButtonEffect(e);
 	if (hiddenDisplayInput.charAt(hiddenDisplayInput.length - 1) === operator) {
 		return;
 	}
@@ -138,78 +141,62 @@ const storeSecond = function storeSecondTermAndSolve(e) {
 	operatorIndex = hiddenDisplayInput.indexOf(operator);
 	secondTerm = Number(hiddenDisplayInput.slice(operatorIndex + 1));
 	operate(firstTerm, secondTerm, operator);
-	disableEqual();
-};
+	disableEqualBtn();
+}
 
-//equal button
-const equalBtn = document.querySelector("#equal");
-equalBtn.addEventListener("click", storeSecond);
-
-//enable or disable equal button
-const disableEqual = function disableEqualBtn() {
+function disableEqualBtn() {
 	equalBtn.disabled = true;
-};
+}
 
-const enableEqual = function enableEqualBtn() {
+function enableEqualBtn() {
 	equalBtn.disabled = false;
-};
+}
 
-//% button
-const percentResult = function moveDecimalPlacetoLeftByTwo(e) {
-	addRemoveBtnEffect(e);
+function moveDecimalPlacetoLeftByTwo(e) {
+	toggleButtonEffect(e);
 	displayResult.textContent = Number(displayResult.textContent) / 100;
 	hiddenDisplayInput = displayResult.textContent;
 	firstTerm = Number(displayResult.textContent);
-};
+}
 
-const percentBtn = document.querySelector("#percent");
-percentBtn.addEventListener("click", percentResult);
-
-//disable all buttons except AC
-const disableBtns = function disableAllBtnExceptClear() {
+function disableAllBtnExceptClear() {
 	inputBtn.forEach((button) => (button.disabled = true));
 	backBtn.disabled = true;
 	percentBtn.disabled = true;
-};
+}
 
-const enableBtns = function enableAllBtnExceptClear() {
+function enableAllBtn() {
 	inputBtn.forEach((button) => (button.disabled = false));
 	backBtn.disabled = false;
 	percentBtn.disabled = false;
-};
+	clearBtn.disabled = false;
+}
 
-//initialize Variables
-const initialize = function initializeVariables(e) {
-	addRemoveBtnEffect(e);
-	displayInputs.textContent = "";
+function initializeVariables(e) {
+	toggleButtonEffect(e);
+	displayInputs.textContent = "0";
 	displayResult.textContent = "";
 	firstTerm = "";
 	secondTerm = "";
 	operator = "";
-	hiddenDisplayInput = "";
+	hiddenDisplayInput = "0";
 	secondOperator = "";
-	enableBtns();
-	disableEqual();
-};
+	enableAllBtn();
+	disableEqualBtn();
+}
 
-//clear button
-const clearBtn = document.querySelector("#clear");
-clearBtn.addEventListener("click", initialize);
-
-//NaN result
-const showResult = function checkIfNanOrNumber() {
+function checkIfNanOrNumber() {
 	if (displayResult.textContent === "NaN") {
 		displayResult.textContent = "undefined";
-		disableBtns();
+		disableAllBtnExceptClear();
 	} else {
 		displayResult.textContent = `= ${displayResult.textContent}`;
 		hiddenDisplayInput = displayResult.textContent.slice(2);
 		firstTerm = Number(displayResult.textContent.slice(2));
 	}
-};
+}
 
-//key event
-const eventKey = function pressKey(e) {
+function convertPressKeyToClick(e) {
 	for (let i = 0; i < 15; i++) {
 		if (inputBtn[i].textContent === e.key) {
 			inputBtn[i].click();
@@ -226,6 +213,6 @@ const eventKey = function pressKey(e) {
 	} else if (e.key === "/") {
 		inputBtn[0].click();
 	}
-};
+}
 
-document.addEventListener("keydown", eventKey);
+document.addEventListener("keydown", convertPressKeyToClick);
