@@ -6,6 +6,7 @@ let operatorIndex;
 
 const displayInputs = document.querySelector("#inputs");
 let hiddenDisplayInput = "";
+displayInputs.textContent = "0";
 
 const displayResult = document.querySelector("#result");
 
@@ -50,8 +51,18 @@ function populateDisplay(e) {
 	if (hiddenDisplayInput === displayResult.textContent) {
 		displayInputs.textContent = `${displayResult.textContent}`;
 	}
+
 	hiddenDisplayInput = `${hiddenDisplayInput}${press}`;
 	displayInputs.textContent = hiddenDisplayInput;
+
+	if (
+		hiddenDisplayInput.slice(-1) === "+" ||
+		hiddenDisplayInput.slice(-1) === "-" ||
+		hiddenDisplayInput.slice(-1) === "*" ||
+		hiddenDisplayInput.slice(-1) === "÷"
+	) {
+		disableOperatorBtns();
+	}
 }
 
 function backSpace(e) {
@@ -60,6 +71,15 @@ function backSpace(e) {
 	displayInputs.textContent = hiddenDisplayInput;
 	if (!hiddenDisplayInput.includes(".")) {
 		enableDecimalPoint();
+	}
+
+	if (
+		!hiddenDisplayInput.includes("+") ||
+		!hiddenDisplayInput.includes("-") ||
+		!hiddenDisplayInput.includes("*") ||
+		!hiddenDisplayInput.includes("÷")
+	) {
+		enableOperatorBtns();
 	}
 }
 
@@ -101,12 +121,14 @@ function operate(firstNum, secondNum, operator) {
 	} else if (operator === "÷") {
 		displayResult.textContent = roundOff(divide(firstNum, secondNum));
 	}
+	enableOperatorBtns();
 	checkIfNanOrNumber();
 }
 
 function storeFirstAndSecondAndOperator(e) {
 	enableEqualBtn();
 	enableDecimalPoint();
+
 	//condition triggers when 2 operators are detected inside the hiddenDisplayInput
 	if (hiddenDisplayInput.match(/[+,*,÷,-]/g).length === 2) {
 		if (secondOperator) {
@@ -144,14 +166,6 @@ function storeSecondTermAndSolve(e) {
 	disableEqualBtn();
 }
 
-function disableEqualBtn() {
-	equalBtn.disabled = true;
-}
-
-function enableEqualBtn() {
-	equalBtn.disabled = false;
-}
-
 function moveDecimalPlacetoLeftByTwo(e) {
 	toggleButtonEffect(e);
 	displayResult.textContent = Number(displayResult.textContent) / 100;
@@ -172,6 +186,26 @@ function enableAllBtn() {
 	clearBtn.disabled = false;
 }
 
+function disableEqualBtn() {
+	equalBtn.disabled = true;
+}
+
+function enableEqualBtn() {
+	equalBtn.disabled = false;
+}
+
+function disableOperatorBtns() {
+	for (const button of operationClass) {
+		button.disabled = true;
+	}
+}
+
+function enableOperatorBtns() {
+	for (const button of operationClass) {
+		button.disabled = false;
+	}
+}
+
 function initializeVariables(e) {
 	toggleButtonEffect(e);
 	displayInputs.textContent = "0";
@@ -179,7 +213,7 @@ function initializeVariables(e) {
 	firstTerm = "";
 	secondTerm = "";
 	operator = "";
-	hiddenDisplayInput = "0";
+	hiddenDisplayInput = "";
 	secondOperator = "";
 	enableAllBtn();
 	disableEqualBtn();
